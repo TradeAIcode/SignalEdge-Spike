@@ -1,0 +1,23 @@
+{
+    "api_key": "tu_api_key_de_binance",
+    "api_secret": "tu_api_secret",
+    "telegram_token": "token_de_tu_bot",
+    "telegram_chat_id": "tu_chat_id",
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": "465",
+    "email": "tucorreo@gmail.com",
+    "email_password": "tu_contraseña_app",
+    "email_to": "destinatario@example.com",
+    "pairs": [
+        "ARBUSDT",
+        "GALAUSDT",
+        "TRUMPUSDT",
+        "IDUSDT",
+        "XRPUSDT"
+    ],
+    "interval": "15m",
+    "ema_fast": 5,
+    "ema_slow": 15,
+    "scan_time": 2,
+    "ntfy_topic": "tu_tema_ntfy"
+}

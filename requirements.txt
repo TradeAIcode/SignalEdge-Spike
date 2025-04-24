@@ -1,0 +1,7 @@
+
+python-binance
+pandas
+numpy
+ta
+PyQt5
+python-telegram-bot
