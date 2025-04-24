@@ -33,9 +33,7 @@ SignalEdge Spike analiza datos de velas en un intervalo configurable (ej. 15 min
 - La vela tiene un cuerpo alcista grande
 
 ### Ejemplo:
-En la siguiente imagen, se genera una señal al cierre de la vela del **23 de abril de 2025 a las 23:00 UTC**, con un precio de **10,131 USDT** en el par **TRUMPUSDT**:
-
-![Ejemplo de Señal](imagenes/signal.png)
+Se genera una señal al cierre de la vela del **23 de abril de 2025 a las 23:00 UTC**, con un precio de **10,131 USDT** en el par **TRUMPUSDT**:
 
 ---
 
