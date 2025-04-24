@@ -2,7 +2,7 @@
 
 SignalEdge Spike es un bot de alertas de trading en tiempo real diseñado para detectar movimientos bruscos e inesperados al alza en el mercado, especialmente en pares de criptomonedas como **TRUMPUSDT**. Esta herramienta ayuda a los traders a anticiparse a oportunidades explosivas mediante una estrategia técnica precisa basada en impulso y volumen.
 
-![SignalEdge Banner](signal.png)
+![SignalEdge Banner](imagenes/signal.png)
 
 ---
 
@@ -35,7 +35,7 @@ SignalEdge Spike analiza datos de velas en un intervalo configurable (ej. 15 min
 ### Ejemplo:
 En la siguiente imagen, se genera una señal al cierre de la vela del **23 de abril de 2025 a las 23:00 UTC**, con un precio de **10,131 USDT** en el par **TRUMPUSDT**:
 
-![Ejemplo de Señal](signal.png)
+![Ejemplo de Señal](imagenes/signal.png)
 
 ---
 
@@ -98,6 +98,14 @@ La interfaz se divide en dos pestañas:
 
 Cada par tiene su propio campo editable junto con su precio actual.
 
+### Vista de la pestaña "Monitor":
+
+![Monitor Tab](imagenes/main_tab.png)
+
+### Vista de la pestaña "Configuración":
+
+![Configuracion Tab](imagenes/configuracion_tab.png)
+
 ---
 
 ## Canales de alerta
@@ -106,7 +114,17 @@ SignalEdge Spike soporta tres tipos de notificaciones:
 
 - ✅ **Telegram**: mensajes directos desde tu bot
 - ✅ **Correo electrónico**: mensajes SMTP a tu bandeja de entrada
-- ✅ **Push (NTFY)**: notificaciones al instante en el móvil
+- ✅ **Push (NTFY)**: notificaciones instantáneas en el móvil
+
+### NTFY - Notificaciones Push
+
+El bot es compatible con [NTFY](https://ntfy.sh), un sistema gratuito de notificaciones push que te permite recibir alertas instantáneas en tu teléfono (Android/iOS) o navegador. Solo necesitas configurar un *topic* (tema) personalizado en la aplicación o en el navegador, y el bot enviará ahí las alertas.
+
+Ventajas:
+- Sin registro
+- Gratuito
+- Compatible con móvil y escritorio
+- No se requiere clave API
 
 ---
 
@@ -118,6 +136,6 @@ Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
 
 ## Autor
 
-Desarrollado por Yarbis ❤️  
+Desarrollado por TradeAIcode ❤️  
 Precisión. Velocidad. Oportunidad.
 
