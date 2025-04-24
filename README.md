@@ -2,7 +2,7 @@
 
 SignalEdge Spike es un bot de alertas de trading en tiempo real diseñado para detectar movimientos bruscos e inesperados al alza en el mercado, especialmente en pares de criptomonedas como **TRUMPUSDT**. Esta herramienta ayuda a los traders a anticiparse a oportunidades explosivas mediante una estrategia técnica precisa basada en impulso y volumen.
 
-![SignalEdge Banner](imagenes/signal.png)
+![SignalEdge Banner](imagenes/signal.jpg)
 
 ---
 
