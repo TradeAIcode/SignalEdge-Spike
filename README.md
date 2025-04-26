@@ -41,8 +41,8 @@ Se genera una señal al cierre de la vela del **23 de abril de 2025 a las 23:00 
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tuusuario/signaledge-spike.git
-cd signaledge-spike
+git clone https://github.com/TradeAIcode/SignalEdge-Spike.git
+cd SignalEdge-Spike
 
 # Instalar dependencias
 pip install -r requirements.txt
