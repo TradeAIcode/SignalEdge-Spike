@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QPushButton,
-    QHBoxLayout, QSpinBox, QComboBox, QTabWidget, QLineEdit, QGridLayout, QMessageBox
+    QHBoxLayout, QSpinBox, QComboBox, QTabWidget, QLineEdit, QGridLayout, QMessageBox, QMessageBox, QDialog, QTextEdit
 )
+
 from PyQt5.QtCore import QTimer
 import sys, json, os
 from scanner import Scanner
@@ -35,6 +36,8 @@ class MainApp(QWidget):
         self.timer.timeout.connect(self.scan)
 
         self.scanner = Scanner()
+        
+        
 
     def init_monitor_tab(self):
         layout = QVBoxLayout()
@@ -42,27 +45,53 @@ class MainApp(QWidget):
 
         self.pair_inputs = []
         self.price_labels = []
+        self.ema_labels = []
+        self.rsi_labels = []
+        self.vol_labels = []
+        self.candle_labels = []
+        self.info_buttons = []
 
         for i in range(5):
             pair_input = QLineEdit()
             pair_input.setPlaceholderText("Ej: TRUMPUSDT")
-            pair_input.setFixedWidth(200)
 
-            price_label = QLabel("Precio: -")
-            price_label.setFixedWidth(200)
-            price_label.setStyleSheet("border: 1px solid #ccc; padding: 4px;")
+            price_label = QLabel("-")
+            ema_label = QPushButton("EMA")
+            rsi_label = QPushButton("RSI")
+            vol_label = QPushButton("Volumen")
+            candle_label = QPushButton("Velón")
+            info_button = QPushButton("Info")
+
+            for btn in [ema_label, rsi_label, vol_label, candle_label]:
+                btn.setEnabled(False)
+
+            info_button.clicked.connect(lambda _, row=i: self.show_info_popup(row))
 
             self.pair_inputs.append(pair_input)
             self.price_labels.append(price_label)
+            self.ema_labels.append(ema_label)
+            self.rsi_labels.append(rsi_label)
+            self.vol_labels.append(vol_label)
+            self.candle_labels.append(candle_label)
+            self.info_buttons.append(info_button)
 
             grid.addWidget(pair_input, i, 0)
             grid.addWidget(price_label, i, 1)
+            grid.addWidget(ema_label, i, 2)
+            grid.addWidget(rsi_label, i, 3)
+            grid.addWidget(vol_label, i, 4)
+            grid.addWidget(candle_label, i, 5)
+            grid.addWidget(info_button, i, 6)
 
+        layout.addLayout(grid)
+
+        # Declaración y configuración de widgets de control (añadidos aquí)
         self.interval_combo = QComboBox()
         self.interval_combo.addItems(["15m", "30m", "1h"])
 
         self.ema_fast_input = QSpinBox()
         self.ema_fast_input.setValue(5)
+
         self.ema_slow_input = QSpinBox()
         self.ema_slow_input.setValue(15)
 
@@ -75,7 +104,7 @@ class MainApp(QWidget):
         self.start_button.clicked.connect(self.start_scanning)
         self.stop_button.clicked.connect(self.stop_scanning)
 
-        layout.addLayout(grid)
+        # Añadir los controles al layout
         layout.addWidget(QLabel("Intervalo:"))
         layout.addWidget(self.interval_combo)
         layout.addWidget(QLabel("EMA rápida:"))
@@ -88,6 +117,11 @@ class MainApp(QWidget):
         layout.addWidget(self.stop_button)
 
         self.tab_monitor.setLayout(layout)
+
+        # Guarda los últimos resultados para el popup
+        self.last_signals = [{} for _ in range(5)]
+        
+        
 
     def init_config_tab(self):
         layout = QVBoxLayout()
@@ -196,7 +230,35 @@ class MainApp(QWidget):
                 self.ema_fast_input.setValue(config.get("ema_fast", 5))
                 self.ema_slow_input.setValue(config.get("ema_slow", 15))
                 self.scan_time_input.setValue(config.get("scan_time", 300))
+                
 
+    def show_info_popup(self, row):
+        data = self.last_signals[row]
+        if not data:
+            QMessageBox.information(self, "Sin datos", "No hay información para este par aún.")
+            return
+
+        msg = (
+            f"📊 Detalles de {data.get('pair', 'Par desconocido')}\n\n"
+            f"Precio actual: {data.get('price')}\n"
+            f"EMA rápida: {data.get('ema_fast')}\n"
+            f"EMA lenta: {data.get('ema_slow')}\n"
+            f"RSI: {data.get('rsi'):.2f}\n"
+            f"Volumen: {data.get('volume'):.2f} (Promedio: {data.get('vol_avg'):.2f})\n"
+            f"Velón: {'✅' if data.get('big_candle') else '❌'}"
+        )
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle(f"Detalles: {data.get('pair')}")
+        layout = QVBoxLayout()
+        txt = QTextEdit(msg)
+        txt.setReadOnly(True)
+        layout.addWidget(txt)
+        dlg.setLayout(layout)
+        dlg.exec_()
+
+    
+    
     def start_scanning(self):
         if not self.api_key_input.text().strip() or not self.api_secret_input.text().strip():
             QMessageBox.warning(self, "Falta configuración", "Debes introducir la API Key y Secret de Binance.")
@@ -224,10 +286,19 @@ class MainApp(QWidget):
         interval = self.interval_combo.currentText()
         ema_fast = self.ema_fast_input.value()
         ema_slow = self.ema_slow_input.value()
-        prices = self.scanner.scan(pairs, interval, ema_fast, ema_slow)
-        for i, price in enumerate(prices):
+
+        results = self.scanner.scan(pairs, interval, ema_fast, ema_slow)
+
+        for i, res in enumerate(results):
             if i < len(self.price_labels):
-                self.price_labels[i].setText(f"Precio: {price:.4f} USDT" if price else "Precio: -")
+                self.price_labels[i].setText(f"{res.get('price', '-'): .4f} USDT" if res.get("price") else "-")
+
+                self.ema_labels[i].setStyleSheet("background-color: lightgreen" if res.get("cross") else "")
+                self.rsi_labels[i].setStyleSheet("background-color: lightgreen" if res.get("rsi_high") else "")
+                self.vol_labels[i].setStyleSheet("background-color: lightgreen" if res.get("vol_spike") else "")
+                self.candle_labels[i].setStyleSheet("background-color: lightgreen" if res.get("big_candle") else "")
+
+                self.last_signals[i] = res  # guardamos todo para la ventana Info
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
