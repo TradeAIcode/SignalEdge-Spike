@@ -98,6 +98,19 @@ Cada par tiene su propio campo editable junto con su precio actual.
 
 ### Vista de la pestaña "Monitor":
 
+La GUI muestra una tabla con el siguiente formato:
+
+| Par        | Precio     | EMA   | RSI   | Volumen | Velón | Info |
+|------------|------------|-------|-------|---------|--------|------|
+| TRUMPUSDT  | 13.0170 USDT | 🟢    | ⚪️    | ⚪️      | ⚪️     | 🔍 |
+
+- Los indicadores aparecen en verde (🟢) si se cumplen las condiciones de la estrategia.
+- El botón "Info" abre una ventana popup con los detalles exactos de la última vela:
+  - Valores de EMA rápida y lenta
+  - RSI
+  - Volumen y su comparación con la media
+  - Si la vela es considerada un "velón"
+
 ![Monitor Tab](imagenes/main_tab.png)
 
 ### Vista de la pestaña "Configuración":
