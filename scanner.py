@@ -10,15 +10,21 @@ CONFIG_FILE = "config.json"
 
 class AlertStateTracker:
     def __init__(self):
-        self.last_alerts = {}  # {'TRUMPUSDT': 3, 'GALAUSDT': 2, ...}
+        self.last_alerts = {}  # {'TRUMPUSDT': {'score': 3, 'timestamp': 1714500000000}}
 
-    def should_send_alert(self, pair, current_score):
-        last = self.last_alerts.get(pair)
-        if last != current_score and current_score >= 3:
-            self.last_alerts[pair] = current_score
+    def should_send_alert(self, pair, current_score, current_timestamp):
+        last = self.last_alerts.get(pair, {})
+        last_score = last.get('score')
+        last_time = last.get('timestamp')
+
+        # Solo alertar si cambia el score y es una nueva vela
+        if current_score >= 2 and current_timestamp != last_time:
+            self.last_alerts[pair] = {
+                'score': current_score,
+                'timestamp': current_timestamp
+            }
             return True
         return False
-
 
 class Scanner:
     def __init__(self):
@@ -72,7 +78,8 @@ class Scanner:
                 if big_candle: conditions_met.append("Velón")
                 true_conditions = len(conditions_met)
 
-                if self.alert_tracker.should_send_alert(pair, true_conditions):
+                timestamp = df['timestamp'].iloc[-1]
+                if self.alert_tracker.should_send_alert(pair, true_conditions, timestamp):
                     if true_conditions == 4:
                         print(f"🔥 SEÑAL COMPLETA en {pair}!")
                         message = (
@@ -80,9 +87,12 @@ class Scanner:
                             f"💰 Precio: {current_price:.4f} USDT\n"
                             f"Condiciones cumplidas: EMA, RSI, Volumen, Velón"
                         )
-                        send_email_alert("🔥 Señal de Trading Detectada", message)
-                        send_telegram_alert(message)
-                        send_ntfy_alert(config.get("ntfy_topic", ""), "Señal Completa", message)
+                        if config.get("enable_email", True):
+                            send_email_alert("🔥 Señal de Trading Detectada", message)
+                        if config.get("enable_telegram", True):
+                            send_telegram_alert(message)
+                        if config.get("enable_ntfy", True):
+                            send_ntfy_alert(config.get("ntfy_topic", ""), "Alerta Completa", message)
                     else:
                         print(f"⚠️ ALERTA PARCIAL: {true_conditions}/4 condiciones en {pair}")
                         message = (
@@ -90,9 +100,12 @@ class Scanner:
                             f"💰 Precio: {current_price:.4f} USDT\n"
                             f"✅ Condiciones: {', '.join(conditions_met)}"
                         )
-                        send_email_alert("📈 Posible Spike Detectado", message)
-                        send_telegram_alert(message)
-                        send_ntfy_alert(config.get("ntfy_topic", ""), "Spike Potencial", message)
+                        if config.get("enable_email", True):
+                            send_email_alert("📈 Posible Spike Detectado", message)
+                        if config.get("enable_telegram", True):
+                            send_telegram_alert(message)
+                        if config.get("enable_ntfy", True):
+                            send_ntfy_alert(config.get("ntfy_topic", ""), "Spike Potencial", message)
 
                 results.append({
                     "pair": pair,

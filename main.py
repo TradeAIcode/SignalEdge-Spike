@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QLabel, QPushButton,
+    QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QCheckBox,
     QHBoxLayout, QSpinBox, QComboBox, QTabWidget, QLineEdit, QGridLayout, QMessageBox, QMessageBox, QDialog, QTextEdit
 )
 
@@ -144,6 +144,10 @@ class MainApp(QWidget):
         self.email_pass_input.setEchoMode(QLineEdit.Password)
         self.email_to_input = QLineEdit()
         self.ntfy_topic_input = QLineEdit()
+        
+        self.email_checkbox = QCheckBox("Enviar alertas por Email")
+        self.telegram_checkbox = QCheckBox("Enviar alertas por Telegram")
+        self.ntfy_checkbox = QCheckBox("Enviar alertas por NTFY")
 
         self.save_config_btn = QPushButton("Guardar configuración")
         self.save_config_btn.clicked.connect(self.save_config)
@@ -170,6 +174,10 @@ class MainApp(QWidget):
         
         layout.addWidget(QLabel("NTFY Topic:"))
         layout.addWidget(self.ntfy_topic_input)
+        
+        layout.addWidget(self.email_checkbox)
+        layout.addWidget(self.telegram_checkbox)
+        layout.addWidget(self.ntfy_checkbox)
 
         layout.addWidget(self.save_config_btn)
         self.tab_config.setLayout(layout)
@@ -190,7 +198,10 @@ class MainApp(QWidget):
             "ema_fast": self.ema_fast_input.value(),
             "ema_slow": self.ema_slow_input.value(),
             "scan_time": self.scan_time_input.value(),
-            "ntfy_topic": self.ntfy_topic_input.text()
+            "ntfy_topic": self.ntfy_topic_input.text(),
+            "enable_email": self.email_checkbox.isChecked(),
+            "enable_telegram": self.telegram_checkbox.isChecked(),
+            "enable_ntfy": self.ntfy_checkbox.isChecked()
         }
         with open(CONFIG_FILE, 'w') as f:
             json.dump(config, f, indent=4)
@@ -220,6 +231,9 @@ class MainApp(QWidget):
                 self.email_pass_input.setText(config.get("email_password", ""))
                 self.email_to_input.setText(config.get("email_to", ""))
                 self.ntfy_topic_input.setText(config.get("ntfy_topic", ""))
+                self.email_checkbox.setChecked(config.get("enable_email", True))
+                self.telegram_checkbox.setChecked(config.get("enable_telegram", True))
+                self.ntfy_checkbox.setChecked(config.get("enable_ntfy", True))
 
                 pairs = config.get("pairs", [])
                 for i, pair in enumerate(pairs):
